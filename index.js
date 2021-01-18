@@ -1,5 +1,8 @@
 const express = require('express');
 const { Sequelize, DataTypes } = require('sequelize');
+const helmet = require('helmet');
+const compression = require('compression');
+const rateLimit = require("express-rate-limit");
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
@@ -26,8 +29,16 @@ const SensorData = sequelize.define('sensor-data', {
     },
 })
 
+const limiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minutes
+    max: 10 // limit each IP to 10 requests per windowMs
+});
+
 const app = express();
+app.use(helmet());
+app.use(compression());
 app.use(express.json());
+app.use(limiter);
 
 app.get('/data', async (req, res) => {
     const allData = await SensorData.findAll();
