@@ -67,6 +67,10 @@ app.get('/data', async (req, res) => {
 app.post('/data', async (req, res) => {
     let data = req.body;
     let hmac = req.headers['hmac'];
+    if(!hmac) {
+        res.status(403).send('No HMAC');
+        return;
+    }
     let hmacExpected = crypto.createHmac('sha1', HMAC_KEY)
         .update(JSON.stringify(data))
         .digest('hex');
