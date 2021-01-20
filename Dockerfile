@@ -7,3 +7,5 @@ COPY . .
 RUN npm install --production
 
 EXPOSE 8080
+
+ENTRYPOINT ["index.js"]
