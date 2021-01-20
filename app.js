@@ -16,20 +16,11 @@ const password = process.env.DB_PASS;
 const database = process.env.DB_NAME;
 const host = `${dbSocketPath}/${process.env.CLOUD_SQL_CONNECTION_NAME}`;
 
-console.log({ host });
-
 const sequelize = nodeEnv === 'test' ? 
     new Sequelize('sqlite::memory:') : 
     new Sequelize(database, user, password, {
         host: host,
-        dialect: 'postgres',
-        dialectOptions: {
-            ssl: {
-                require: true,
-                rejectUnauthorized: false
-            },
-            socketPath: host
-        }
+        dialect: 'postgres'
     });
 
 const SensorData = sequelize.define('sensorData', {
