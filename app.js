@@ -14,20 +14,21 @@ const dbSocketPath = process.env.DB_SOCKET_PATH || '/cloudsql';
 const user = process.env.DB_USER;
 const password = process.env.DB_PASS;
 const database = process.env.DB_NAME;
-const socketPath = `${dbSocketPath}/${process.env.CLOUD_SQL_CONNECTION_NAME}`;
+const host = `${dbSocketPath}/${process.env.CLOUD_SQL_CONNECTION_NAME}`;
 
-console.log({ socketPath });
+console.log({ host });
 
 const sequelize = nodeEnv === 'test' ? 
     new Sequelize('sqlite::memory:') : 
     new Sequelize(database, user, password, {
+        host: host,
         dialect: 'postgres',
         dialectOptions: {
             ssl: {
                 require: true,
                 rejectUnauthorized: false
             },
-            socketPath: socketPath
+            socketPath: host
         }
     });
 
