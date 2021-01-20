@@ -16,6 +16,8 @@ const password = process.env.DB_PASS;
 const database = process.env.DB_NAME;
 const host = `${dbSocketPath}/${process.env.CLOUD_SQL_CONNECTION_NAME}`;
 
+console.log({ host });
+
 const sequelize = nodeEnv === 'test' ? 
     new Sequelize('sqlite::memory:') : 
     new Sequelize(database, user, password, {
