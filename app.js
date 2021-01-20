@@ -9,9 +9,17 @@ const HMAC_KEY = process.env.HMAC_KEY || 'cupcakes';
 const API_KEY = process.env.API_KEY || '12345';
 const nodeEnv = process.env.NODE_ENV;
 
+const dbSocketPath = process.env.DB_SOCKET_PATH || '/cloudsql';
+
+const user = process.env.DB_USER;
+const password = process.env.DB_PASS;
+const database = process.env.DB_NAME;
+const host = `${dbSocketPath}/${process.env.CLOUD_SQL_CONNECTION_NAME}`;
+
 const sequelize = nodeEnv === 'test' ? 
     new Sequelize('sqlite::memory:') : 
-    new Sequelize(process.env.DATABASE_URL, {
+    new Sequelize(database, user, password, {
+        host: host,
         dialect: 'postgres',
         dialectOptions: {
             ssl: {
