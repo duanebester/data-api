@@ -11,17 +11,34 @@ const nodeEnv = process.env.NODE_ENV;
 
 const dbSocketPath = process.env.DB_SOCKET_PATH || '/cloudsql';
 
+const dbUrl = process.env.DATABASE_URL;
 const user = process.env.DB_USER;
 const password = process.env.DB_PASSWORD;
 const database = process.env.DB_NAME;
 const host = `${dbSocketPath}/${process.env.CLOUD_SQL_CONNECTION_NAME}`;
 
-const sequelize = nodeEnv === 'test' ? 
-    new Sequelize('sqlite::memory:') : 
-    new Sequelize(user, password, database, {
-        host: host,
-        dialect: 'postgres',
-    });
+let sequelize;
+
+if(dbUrl) {
+    sequelize = nodeEnv === 'test' ? 
+        new Sequelize('sqlite::memory:') : 
+        new Sequelize(dbUrl, {
+            dialect: 'postgres',
+            dialectOptions: {
+                ssl: {
+                    require: true,
+                    rejectUnauthorized: true
+                }
+            }
+        });
+} else {
+    sequelize = nodeEnv === 'test' ? 
+        new Sequelize('sqlite::memory:') : 
+        new Sequelize(user, password, database, {
+            host: host,
+            dialect: 'postgres',
+        });
+}
 
 const SensorData = sequelize.define('sensorData', {
     serial: {
